@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🦁 Zoo de Palabras — Aprende animales en inglés</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#FFF7E8;
+    --coral:#FF6B6B;
+    --turquoise:#2FC3BE;
+    --yellow:#FFC93C;
+    --green:#6FCF52;
+    --purple:#9B7EDE;
+    --pink:#FF8FB1;
+    --ink:#2C2A4A;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    background:var(--bg);
+    font-family:'Quicksand', sans-serif;
+    color:var(--ink);
+    overflow-x:hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+  h1,h2,h3,.display{font-family:'Fredoka', sans-serif; font-weight:600;}
+
+  .blob{
+    position:absolute; border-radius:50%;
+    filter:blur(0px); opacity:.35; z-index:0;
+  }
+
+  /* ---------- HEADER ---------- */
+  header{
+    position:sticky; top:0; z-index:50;
+    background:var(--white);
+    box-shadow:0 4px 16px rgba(44,42,74,.08);
+  }
+  .nav-inner{
+    max-width:1100px; margin:0 auto;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 22px;
+  }
+  .logo{
+    display:flex; align-items:center; gap:10px;
+    font-size:1.4rem; color:var(--ink);
+  }
+  .logo .emoji{font-size:1.8rem;}
+  .tabs{display:flex; gap:10px; background:var(--bg); padding:6px; border-radius:30px;}
+  .tab-btn{
+    border:none; background:transparent; cursor:pointer;
+    padding:10px 20px; border-radius:24px;
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size:.95rem;
+    color:var(--ink); transition:all .25s;
+  }
+  .tab-btn.active{background:var(--coral); color:var(--white); box-shadow:0 6px 14px rgba(255,107,107,.4);}
+
+  .score-pill{
+    display:flex; align-items:center; gap:6px;
+    background:var(--yellow); padding:9px 16px; border-radius:20px;
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size:.95rem;
+    box-shadow:0 4px 10px rgba(255,201,60,.4);
+  }
+
+  /* ---------- HERO ---------- */
+  .hero{
+    position:relative;
+    max-width:1100px; margin:0 auto;
+    padding:56px 24px 40px;
+    text-align:center;
+    z-index:1;
+  }
+  .hero .blob1{width:220px; height:220px; background:var(--turquoise); top:-40px; left:0;}
+  .hero .blob2{width:180px; height:180px; background:var(--pink); top:10px; right:0;}
+  .hero h1{
+    font-size:clamp(2.1rem, 5vw, 3.4rem);
+    line-height:1.1;
+    margin-bottom:16px;
+    text-shadow:
+      3px 3px 0 var(--yellow);
+  }
+  .hero h1 span{color:var(--coral);}
+  .hero p{
+    font-size:1.15rem; font-weight:600; color:var(--ink);
+    max-width:520px; margin:0 auto 26px;
+    opacity:.8;
+  }
+  .bounce-animal{
+    font-size:5rem;
+    display:inline-block;
+    animation: bounce 1.6s infinite ease-in-out;
+  }
+  @keyframes bounce{
+    0%,100%{transform:translateY(0) rotate(-3deg);}
+    50%{transform:translateY(-18px) rotate(3deg);}
+  }
+
+  /* ---------- FLASHCARDS VIEW ---------- */
+  .view{max-width:1100px; margin:0 auto; padding:10px 24px 90px; position:relative; z-index:1;}
+  .section-title{
+    text-align:center; font-size:1.6rem; margin-bottom:8px;
+  }
+  .section-sub{
+    text-align:center; color:var(--ink); opacity:.65; font-weight:600; margin-bottom:32px;
+  }
+
+  .card-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(210px,1fr));
+    gap:24px;
+  }
+  .flash-card{
+    background:var(--white);
+    border-radius:28px;
+    padding:20px;
+    text-align:center;
+    border:5px solid var(--card-color, var(--coral));
+    box-shadow:0 10px 0 rgba(44,42,74,.08);
+    transition:transform .2s;
+    cursor:pointer;
+  }
+  .flash-card:hover{transform:translateY(-6px) rotate(-1deg);}
+  .flash-card .img-wrap{
+    width:130px; height:130px; margin:0 auto 14px;
+    border-radius:50%;
+    overflow:hidden;
+    border:5px solid var(--card-color, var(--coral));
+    background:var(--bg);
+  }
+  .flash-card img{width:100%; height:100%; object-fit:cover; display:block;}
+  .flash-card .en{font-family:'Fredoka', sans-serif; font-size:1.35rem; font-weight:600; color:var(--card-color, var(--coral));}
+  .flash-card .es{font-size:.92rem; font-weight:600; color:var(--ink); opacity:.6; margin-bottom:12px;}
+  .speak-btn{
+    border:none; background:var(--bg); width:44px; height:44px; border-radius:50%;
+    font-size:1.3rem; cursor:pointer;
+    box-shadow:inset 0 0 0 3px var(--card-color, var(--coral));
+    transition:transform .15s;
+  }
+  .speak-btn:active{transform:scale(.9);}
+
+  /* ---------- QUIZ VIEW ---------- */
+  .quiz-box{
+    max-width:640px; margin:0 auto;
+    background:var(--white);
+    border-radius:32px;
+    padding:38px 30px;
+    text-align:center;
+    box-shadow:0 14px 0 rgba(44,42,74,.08);
+    border:6px solid var(--purple);
+  }
+  .quiz-prompt{font-size:1.15rem; font-weight:700; margin-bottom:18px;}
+  .listen-btn{
+    display:inline-flex; align-items:center; gap:10px;
+    background:var(--purple); color:var(--white);
+    border:none; padding:16px 30px; border-radius:26px;
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size:1.15rem;
+    cursor:pointer; margin-bottom:30px;
+    box-shadow:0 8px 0 #7a5fc0;
+    transition:transform .12s;
+  }
+  .listen-btn:active{transform:translateY(4px); box-shadow:0 4px 0 #7a5fc0;}
+  .listen-btn .wave{font-size:1.3rem;}
+
+  .quiz-options{
+    display:grid; grid-template-columns:1fr 1fr; gap:18px;
+  }
+  .opt-card{
+    background:var(--bg);
+    border-radius:22px;
+    padding:14px;
+    border:4px solid transparent;
+    cursor:pointer;
+    transition:transform .15s, border-color .2s;
+  }
+  .opt-card:hover{transform:scale(1.03);}
+  .opt-card img{width:100%; aspect-ratio:1/1; object-fit:cover; border-radius:16px; margin-bottom:8px;}
+  .opt-card.correct{border-color:var(--green); background:#EBFAE6;}
+  .opt-card.wrong{border-color:var(--coral); background:#FFECEC; opacity:.6;}
+
+  .feedback{
+    margin-top:22px; font-family:'Fredoka', sans-serif; font-size:1.3rem; min-height:40px;
+  }
+  .feedback.ok{color:var(--green);}
+  .feedback.no{color:var(--coral);}
+
+  .next-btn{
+    margin-top:16px;
+    background:var(--green); color:var(--white); border:none;
+    padding:12px 26px; border-radius:22px; font-weight:700; font-family:'Fredoka',sans-serif;
+    cursor:pointer; box-shadow:0 6px 0 #4fa838; display:none;
+  }
+  .next-btn.show{display:inline-block;}
+
+  footer{
+    text-align:center; padding:30px; font-weight:700; color:var(--ink); opacity:.55;
+  }
+
+  @keyframes pop{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.25);}
+    100%{transform:scale(1);}
+  }
+  .pop{animation:pop .4s ease;}
+
+  @media(max-width:600px){
+    .tabs{display:flex;}
+    .nav-inner{flex-wrap:wrap; gap:10px; justify-content:center;}
+    .quiz-options{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <div class="logo"><span class="emoji">🦁</span> Zoo de Palabras</div>
+    <div class="tabs">
+      <button class="tab-btn active" id="tabLearn" onclick="switchView('learn')">📚 Aprender</button>
+      <button class="tab-btn" id="tabPlay" onclick="switchView('play')">🎮 Jugar</button>
+    </div>
+    <div class="score-pill">⭐ <span id="scoreVal">0</span> puntos</div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="bounce-animal">🐘</div>
+  <h1>Aprende los <span>animales</span> en inglés</h1>
+  <p>Toca las tarjetas para escuchar cómo se pronuncian, ¡y juega para ganar estrellas!</p>
+</section>
+
+<!-- LEARN VIEW -->
+<div class="view" id="learnView">
+  <h2 class="section-title">📚 Tarjetas de animales</h2>
+  <p class="section-sub">Toca el altavoz para escuchar el nombre en inglés</p>
+  <div class="card-grid" id="cardGrid"></div>
+</div>
+
+<!-- QUIZ VIEW -->
+<div class="view" id="playView" style="display:none;">
+  <h2 class="section-title">🎮 ¡Escucha y elige!</h2>
+  <p class="section-sub">Presiona el botón, escucha el animal y toca la imagen correcta</p>
+  <div class="quiz-box">
+    <div class="quiz-prompt">¿Qué animal escuchaste?</div>
+    <button class="listen-btn" onclick="playCurrentWord()"><span class="wave">🔊</span> Reproducir sonido</button>
+    <div class="quiz-options" id="quizOptions"></div>
+    <div class="feedback" id="feedback"></div>
+    <button class="next-btn" id="nextBtn" onclick="nextRound()">Siguiente ➜</button>
+  </div>
+</div>
+
+<footer>Hecho con 💛 para pequeños exploradores del inglés</footer>
+
+<script>
+  const animals = [
+    {en:"Lion", es:"León", q:"lion,animal", color:"var(--coral)"},
+    {en:"Tiger", es:"Tigre", q:"tiger,animal", color:"var(--yellow)"},
+    {en:"Elephant", es:"Elefante", q:"elephant", color:"var(--turquoise)"},
+    {en:"Giraffe", es:"Jirafa", q:"giraffe", color:"var(--green)"},
+    {en:"Monkey", es:"Mono", q:"monkey", color:"var(--purple)"},
+    {en:"Zebra", es:"Cebra", q:"zebra", color:"var(--pink)"},
+    {en:"Penguin", es:"Pingüino", q:"penguin", color:"var(--coral)"},
+    {en:"Dog", es:"Perro", q:"dog,puppy", color:"var(--yellow)"},
+    {en:"Cat", es:"Gato", q:"cat,kitten", color:"var(--turquoise)"},
+    {en:"Rabbit", es:"Conejo", q:"rabbit,bunny", color:"var(--green)"},
+    {en:"Bear", es:"Oso", q:"bear", color:"var(--purple)"},
+    {en:"Owl", es:"Búho", q:"owl", color:"var(--pink)"},
+  ];
+
+  animals.forEach((a,i)=>{ a.img = `https://loremflickr.com/300/300/${a.q}?lock=${i+50}`; });
+
+  let score = 0;
+
+  function speak(text){
+    if(!('speechSynthesis' in window)) return;
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    u.rate = 0.85;
+    u.pitch = 1.15;
+    speechSynthesis.speak(u);
+  }
+
+  function updateScore(delta){
+    score += delta;
+    if(score<0) score=0;
+    document.getElementById('scoreVal').textContent = score;
+    const pill = document.querySelector('.score-pill');
+    pill.classList.remove('pop'); void pill.offsetWidth; pill.classList.add('pop');
+  }
+
+  /* ---------- LEARN VIEW ---------- */
+  function renderCards(){
+    const grid = document.getElementById('cardGrid');
+    grid.innerHTML = animals.map(a => `
+      <div class="flash-card" style="--card-color:${a.color}" onclick="speak('${a.en}')">
+        <div class="img-wrap"><img src="${a.img}" alt="${a.en}"></div>
+        <div class="en">${a.en}</div>
+        <div class="es">${a.es}</div>
+        <button class="speak-btn" onclick="event.stopPropagation(); speak('${a.en}')">🔊</button>
+      </div>
+    `).join('');
+  }
+
+  /* ---------- QUIZ VIEW ---------- */
+  let currentAnimal = null;
+  let currentOptions = [];
+  let answered = false;
+
+  function shuffle(arr){ return [...arr].sort(()=>Math.random()-0.5); }
+
+  function newRound(){
+    answered = false;
+    document.getElementById('feedback').textContent = '';
+    document.getElementById('feedback').className = 'feedback';
+    document.getElementById('nextBtn').classList.remove('show');
+
+    currentAnimal = animals[Math.floor(Math.random()*animals.length)];
+    let wrongPool = animals.filter(a=>a.en!==currentAnimal.en);
+    let wrongs = shuffle(wrongPool).slice(0,3);
+    currentOptions = shuffle([currentAnimal, ...wrongs]);
+
+    const optDiv = document.getElementById('quizOptions');
+    optDiv.innerHTML = currentOptions.map(a => `
+      <div class="opt-card" data-en="${a.en}" onclick="checkAnswer(this, '${a.en}')">
+        <img src="${a.img}" alt="${a.en}">
+      </div>
+    `).join('');
+
+    setTimeout(()=>playCurrentWord(), 400);
+  }
+
+  function playCurrentWord(){
+    if(currentAnimal) speak(currentAnimal.en);
+  }
+
+  function checkAnswer(el, chosenEn){
+    if(answered) return;
+    answered = true;
+    const isCorrect = chosenEn === currentAnimal.en;
+    document.querySelectorAll('.opt-card').forEach(c=>{
+      if(c.dataset.en === currentAnimal.en) c.classList.add('correct');
+      else if(c === el) c.classList.add('wrong');
+    });
+    const fb = document.getElementById('feedback');
+    if(isCorrect){
+      fb.textContent = `¡Correcto! 🎉 Era "${currentAnimal.en}"`;
+      fb.className = 'feedback ok';
+      updateScore(10);
+    } else {
+      fb.textContent = `¡Casi! Era "${currentAnimal.en}" 🐾`;
+      fb.className = 'feedback no';
+      updateScore(-2);
+    }
+    document.getElementById('nextBtn').classList.add('show');
+  }
+
+  function nextRound(){ newRound(); }
+
+  /* ---------- VIEW SWITCH ---------- */
+  function switchView(view){
+    document.getElementById('tabLearn').classList.toggle('active', view==='learn');
+    document.getElementById('tabPlay').classList.toggle('active', view==='play');
+    document.getElementById('learnView').style.display = view==='learn' ? 'block' : 'none';
+    document.getElementById('playView').style.display = view==='play' ? 'block' : 'none';
+    if(view==='play' && !currentAnimal) newRound();
+  }
+
+  renderCards();
+</script>
+
+</body>
+</html>
